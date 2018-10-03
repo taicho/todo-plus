@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!--
+                Use a content security policy to only allow loading images from https or from our extension directory,
+                and only allow scripts that have a specific nonce.
+                -->
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src vscode-resource: https:; script-src 'nonce-${nonce}'; font-src 'nonce-${nonce}';"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo Plus</title>
+
+    <style nonce="${nonce}" type="text/css">
+        @font-face {
+            font-family: 'NES';
+            src:url('${resourcePath}/nes.ttf') format('truetype');
+        }
+
+        /* #templates {
+        display:none;
+    } */
+
+        /* .todoItem {
+            padding: 10px 10px;
+            border-bottom: solid 4px red;
+        }
+
+        .todoItem .completeCheckbox {
+            margin-right: 10px;
+        }
+
+        .todoItem .todoDate {
+            margin-right: 10px;
+            width: 125px;
+            display: inline-block;
+        } */
+
+        /* .todoTable {
+            border-collapse: collapse;
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        .todoTable td {
+            padding: 10px 5px;
+            border-bottom: solid 2px mediumvioletred;
+            border-collapse: collapse;
+        }
+
+        .todoTable td:first-child {
+            width: 25px;
+        }
+
+        .todoTable td:last-child {
+            width: 75%;
+        }
+
+        .todoTable td:last-child div {
+            border: none;
+            background: transparent;
+            color: white;
+            font-size: 15px;
+            width: 100%;
+            outline: none;
+        }
+
+        .todoTable td:last-child div:focus {
+            outline: none;
+        } */
+
+
+        /* .todoItem {
+            width: 95%;
+            padding: 5px 10px;
+            display: flex;
+            flex-direction: row;
+            position: relative;
+            border: solid 2px red;
+            border-radius: 4px;
+        }
+
+        .todoItem .text {
+            margin-left: 10px;
+            height: 100%;
+            font-size: 18px;
+            margin-top: 7px;
+            font-family: "NES";
+        }
+
+        .todoItem .text span {
+            outline: none;
+        }
+
+        .todoItem .info {
+            position: absolute;
+            right: 10px;
+            top: 5px;
+            font-style: italic;
+            font-size: 12px;
+        }
+
+        .todoItem button {
+            background: blue;
+            color: white;
+            border: solid 4px rgba(255, 255, 255, 0.2);
+            padding: 5px;
+            font-size: 15px;
+            border-radius: 6px;
+            outline: none;
+        }
+
+        .todoItem button:active {
+            border: solid 4px transparent;
+        } */
+
+        #templates {
+            display:none;
+        }
+
+        button {
+            display: none;
+        }
+
+        .todoList::after {
+            background: gray;
+            width: 100%;
+            content: '';
+            height: 100%;
+            position: absolute;
+            top: 20px;
+            left: -15px;
+            display: block;
+            z-index: -1
+        }
+
+        .todoList .header {
+            font-family: NES;
+            background-color: red;
+            color: white;
+            border: solid 3px white;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: background-color 1s linear;
+        }
+
+        .todoList .header:hover {
+            background-color:blue;
+        }
+
+        .todoList {
+            position: relative;
+            background: rgb(192, 192, 192);
+            height: 100%;
+            border: solid 4px;
+            padding: 10px;
+            margin-bottom: 50px;
+        }
+
+        .todoItem .text span {
+            outline: none;            
+        }
+
+        .todoItem {
+            position: relative;
+            border-bottom: solid 2px white;
+            margin-bottom: 10px;
+        }
+
+        .todoItem .info {            
+            font-size: 10px;
+            flex: 1 0 auto;            
+            text-align: right;                      
+        }
+
+        .todoItem {
+            color: black;
+            font-family: NES;
+            font-size: 12px;
+            display: flex;
+            flex-direction: row;            
+        }
+
+
+        .info span.date {
+            display: inline-block;            
+            text-align: left;
+        }
+
+        .info span.line {            
+            display: inline-block;       
+            cursor: pointer;       
+        }
+
+        .text {            
+            flex: 0 1 auto;            
+            min-width: 0;            
+            padding-right: 5px;
+        }
+
+        .title {
+            font-family: monospace;
+            white-space: pre;
+            font-size: 10pt;
+            color: white;
+            text-shadow: 2px 3px 5px white;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="templates">
+        <!-- <table class="todoTable">
+            <tbody>
+            </tbody>
+        </table> -->
+
+        <div class="todoList">
+                <div class="header">{file}</div>                
+        </div>
+
+        <div class="todoItem">            
+                <div>
+                <button>Mark</button>
+            </div>
+            <div class="text">
+                <span contenteditable="true">{text}</span>
+            </div>
+            <div class="info">
+                <span class="date">{date}</span>
+                <span class="line">Line {line}</span>
+            </div>
+
+        </div>        
+    </div>
+    <div class='title'>
+_________  ________  ________  ________          ________  ___       ___  ___  ________  ___           
+|\___   ___\\   __  \|\   ___ \|\   __  \        |\   __  \|\  \     |\  \|\  \|\   ____\|\  \          
+\|___ \  \_\ \  \|\  \ \  \_|\ \ \  \|\  \       \ \  \|\  \ \  \    \ \  \\\  \ \  \___|\ \  \         
+     \ \  \ \ \  \\\  \ \  \ \\ \ \  \\\  \       \ \   ____\ \  \    \ \  \\\  \ \_____  \ \  \        
+      \ \  \ \ \  \\\  \ \  \_\\ \ \  \\\  \       \ \  \___|\ \  \____\ \  \\\  \|____|\  \ \__\       
+       \ \__\ \ \_______\ \_______\ \_______\       \ \__\    \ \_______\ \_______\____\_\  \|__|       
+        \|__|  \|_______|\|_______|\|_______|        \|__|     \|_______|\|_______|\_________\  ___     
+                                                                                  \|_________| |\__\    
+                                                                                               \|__|    
+                                                                                                                                                                                                            
+    </div>
+    <div id="content"></div>
+    <script nonce="${nonce}" src="${scriptUri}"></script>
+</body>
+
+</html>

@@ -25,19 +25,31 @@
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
-        "watch": "tsc -watch -p ./",
+        "compile": "npm run compile-webview && npm run compile-extension",
+        "compile-development": "npm run compile-webview-development && npm run compile-extension",
+        "compile-extension": "tsc -p ./",
+        "compile-webview": "tsc -p ./webView && webpack --config webpack.config.js --mode production",
+        "compile-webview-development": "tsc -p ./webView && webpack --config webpack.config.js --mode development",
+        "watch-extension": "tsc -watch -p ./",
+        "watch-webview": "tsc -watch -p ./webView",
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
+        "@types/mocha": "^2.2.42",
+        "@types/node": "^8.10.25",
+        "@types/react": "^16.4.14",
+        "@types/react-dom": "^16.0.8",
+        "ts-loader": "^5.2.1",
+        "tslint": "^5.8.0",
         "typescript": "^2.6.1",
         "vscode": "^1.1.21",
-        "tslint": "^5.8.0",
-        "@types/node": "^8.10.25",
-        "@types/mocha": "^2.2.42"
+        "webpack": "^4.20.2",
+        "webpack-cli": "^3.1.2"
     },
     "dependencies": {
-        "ignore": "^5.0.2"
+        "ignore": "^5.0.2",
+        "react": "^16.5.2",
+        "react-dom": "^16.5.2"
     }
 }

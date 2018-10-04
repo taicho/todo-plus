@@ -3,7 +3,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { TodoPanel } from './todoPanel';
-import { TodoItem } from './interfaces/todoItem';
+import { TodoItem } from './todoItem';
 import * as fs from 'fs';
 import * as path from 'path';
 import ignore from 'ignore';

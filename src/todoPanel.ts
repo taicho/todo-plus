@@ -2,10 +2,10 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { Message } from './interfaces/Message';
 import * as fs from 'fs';
-import { TodoItem } from './interfaces/todoItem';
+import { TodoItem } from './todoItem';
 import { log } from './logging';
 
-const webViewPath = 'assets';
+const webViewPath = 'webView';
 
 export class TodoPanel {
     /**
@@ -153,7 +153,7 @@ export class TodoPanel {
     private _getHtmlForWebview() {
         // Local path to main script run in the webview
         const resourcePath = path.join(this._extensionPath, webViewPath);
-        const scriptPathOnDisk = vscode.Uri.file(path.join(this._extensionPath, webViewPath, 'main.js'));
+        const scriptPathOnDisk = vscode.Uri.file(path.join(this._extensionPath, webViewPath, 'index.js'));
         // And the uri we use to load this script in the webview
         const scriptUri = scriptPathOnDisk.with({ scheme: 'vscode-resource' });
         // Use a nonce to whitelist which scripts can be run

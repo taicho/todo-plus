@@ -15,10 +15,12 @@ export class Shell extends React.Component<any, State>  {
     }
 
     componentDidMount() {
+        console.log('mounted');
         window.addEventListener('message', this.processMessage);
     }
 
     componentWillUnmount() {
+        console.log('unmounted');
         window.removeEventListener('message', this.processMessage);
     }
 
@@ -32,8 +34,13 @@ export class Shell extends React.Component<any, State>  {
         }
     }
 
-    loadItems(todoItems: TodoItem[]) {        
-        const groups = this.state.todoItems || new Map<string,TodoItem[]>();
+    loadItems(todoItems: TodoItem[]) {
+        const groups = this.state.todoItems ? new Map<string, TodoItem[]>(this.state.todoItems) : new Map<string, TodoItem[]>();
+        for (const todoItem of todoItems) {
+            if (groups.has(todoItem.fileUri)) {
+                groups.delete(todoItem.fileUri);
+            }
+        }
         for (const todoItem of todoItems) {
             const group = groups.get(todoItem.fileUri) || [];
             group.push(todoItem);
@@ -47,7 +54,7 @@ export class Shell extends React.Component<any, State>  {
         if (this.state.todoItems) {
             return <React.Fragment>
                 {
-                    [...this.state.todoItems].map(([key, value]) => {
+                    [...this.state.todoItems].sort(([keyA, valueA], [keyB, valueB]) => { return keyA.localeCompare(keyB); }).map(([key, value]) => {
                         return <TodoGroup key={key} fileUri={key} todoItems={value} />;
                     })
                 }

@@ -4,9 +4,6 @@
 import * as vscode from 'vscode';
 import { TodoPanel } from './todoPanel';
 import { TodoItem } from './todoItem';
-import * as fs from 'fs';
-import * as path from 'path';
-import ignore from 'ignore';
 import {log} from './logging';
 
 // this method is called when your extension is activated
@@ -32,7 +29,7 @@ export function activate(context: vscode.ExtensionContext) {
         TodoPanel.createOrShow(context.extensionPath);
         if (TodoPanel.currentPanel) {
             const panel = TodoPanel.currentPanel;
-            process(panel);
+            panel.initialize();
         }
         vscode.window.showInformationMessage('Hello World!');
     });
@@ -40,96 +37,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 }
 
-function process(panel: TodoPanel) {
-    const folders = vscode.workspace.workspaceFolders;
-    if (folders) {
-        for (const folder of folders) {
-            const ig = ignore();
-            ig.add('.git');
-            ig.add('.vscode');
-            const folderPath = folder.uri.with({ scheme: '' }).toString();
-            processDir(panel, folderPath, folderPath, ['.ts', '.js'], (file) => {
-            }, ig);
-        }
-    }
-}
 
-async function isDirectory(path: string) {
-    return new Promise<boolean>((resolve) => {
-        fs.lstat(path, (err, stats) => {
-            resolve(stats.isDirectory());
-        });
-    });
-}
-
-function processDir(panel: TodoPanel, rootPath: string, directoryPath: string, fileTypes: string[], func: (fileName: string) => void, ig: any) {
-    fs.readdir(directoryPath, async (err, files) => {
-        let promise: Promise<void>;
-        if (files.indexOf('.gitignore') > -1) {
-            promise = processGitIgnore(directoryPath, path.join(directoryPath, '.gitignore'), ig);
-            //promise = Promise.resolve();
-        } else {
-            promise = Promise.resolve();
-        }
-        await promise;
-        for (const file of files) {
-            const filePath = path.join(directoryPath, file);
-            const relativePath = path.relative(rootPath, filePath);
-            if (!ig.ignores(relativePath)) {
-                const directory = await isDirectory(filePath);
-                if (directory) {
-                    if (!ig.ignores(`${relativePath}/`)) {
-                        processDir(panel, rootPath, filePath, fileTypes, func, ig);
-                    }
-                }
-                else {
-                    const validFile = fileTypes.some((s => {
-                        return filePath.match(new RegExp(`${s}$`, 'i')) !== null;
-                    }));
-                    if (validFile) {
-                        fs.readFile(filePath, 'utf-8', (err, text) => {
-                            panel.load(getTodosFromText(filePath, text));
-                        });
-                    }
-                }
-            }
-        }
-    });
-}
-
-async function processGitIgnore(directoryPath: string, ignorePath: string, ignore: any) {
-    return new Promise<void>((resolve) => {
-        fs.readFile(ignorePath, 'utf-8', (err, data) => {
-            ignore.add(data);
-            resolve();
-        });
-    });
-}
-
-function getTodosFromText(filePath: string, fileText: string) {
-    const todos = [];
-    const fileSplit = fileText.split('\n');
-    for (let i = 0; i < fileSplit.length; i++) {
-        let line = fileSplit[i];
-        let match = line.match(/\/\/\s*TODO(\(.*\))?:(.*)/);
-        if (match) {
-            let props = match[1];
-            let text = match[2];
-            if (text) {
-                let json = null;
-                if (props) {
-                    json = JSON.parse(props.slice(1, props.length - 1));
-                }
-                todos.push(Object.assign({}, {
-                    line: i,
-                    fileUri: filePath.toString(),
-                    text
-                }, json));
-            }
-        }
-    }
-    return todos;
-}
 
 function identifyLine(editor: vscode.TextEditor, changeEvent: vscode.TextDocumentContentChangeEvent) {
     if (changeEvent) {

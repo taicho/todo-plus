@@ -16,8 +16,11 @@ export class TodoGroup extends React.Component<Props, any> {
         </div>;
     }
 
-    onTodoItemTextChanged = (text: string) => {
-
+    onTodoItemTextChanged = (todoItem : TodoItem, text: string) => {
+        vscode.postMessage({
+            command: 'update',
+            data: Object.assign({},todoItem,{text}),
+        });
     }
 
     onHeaderClicked = () =>{

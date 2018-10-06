@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import { TodoItem as TodoItemInterface } from './interfaces/todoItem';
+import * as vscode from 'vscode';
 
 export class TodoItem implements TodoItemInterface {
     public line: number = 0;
@@ -37,10 +38,18 @@ export class TodoItem implements TodoItemInterface {
 
     public update() {
         const filePath = this.getFilePath();
-        const newLine = this.toString();
-        const text = fs.readFileSync(filePath, 'utf-8');
-        const lines = text.split('\n');
-        lines.splice(this.line, 1, newLine);
-        fs.writeFileSync(filePath, lines.join('\n'), 'utf-8');
+        const textDocument = vscode.workspace.textDocuments.find(x => x.fileName === filePath);
+        const newLine = this.toString();        
+        if (textDocument) {
+            const edit = new vscode.WorkspaceEdit();
+            const range = textDocument.lineAt(this.line).range;
+            edit.replace(vscode.Uri.file(filePath), range, newLine);
+            vscode.workspace.applyEdit(edit);            
+        } else {
+            const text = fs.readFileSync(filePath, 'utf-8');
+            const lines = text.split('\n');
+            lines.splice(this.line, 1, newLine);
+            fs.writeFileSync(filePath, lines.join('\n'), 'utf-8');
+        }
     }
 }

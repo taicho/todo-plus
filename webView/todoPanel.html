@@ -114,13 +114,17 @@
             border: solid 4px transparent;
         } */
 
+        /* body {
+            perspective: 1000px;
+        } */
+
         #templates {
             display:none;
         }
 
-        button {
+        /* button {
             display: none;
-        }
+        } */
 
         .todoList::after {
             background: gray;
@@ -206,6 +210,39 @@
             text-shadow: 2px 3px 5px white;
             text-align: center;
         }
+
+        .shell {
+            perspective: 1000px;
+            position:relative;
+        }        
+
+        .shell div.pending {
+            transform: rotateY(0deg);
+        }
+
+        .shell div.completed {
+            transform: rotateY(-180deg);
+        }
+
+        .shell > div {            
+            backface-visibility: hidden;
+            transition: transform 0.5s linear;
+            position:absolute;
+            top:0;
+            left:0;
+        }
+
+        .shell.completed div.completed {
+            transform: rotateY(0deg);
+        }
+
+        .shell.completed div.pending {
+            transform: rotateY(180deg);
+        }
+
+
+
+
     </style>
 </head>
 
@@ -222,7 +259,7 @@ _________  ________  ________  ________          ________  ___       ___  ___  _
                                                                                                \|__|    
                                                                                                                                                                                                             
     </div>
-    <div id="content"></div>
+    <div id="content"></div>    
     <script nonce="${nonce}" src="${scriptUri}"></script>
 </body>
 

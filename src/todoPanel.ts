@@ -72,6 +72,9 @@ export class TodoPanel {
                 case 'update':
                     this.updateTodo(TodoItem.fromJson(message.data));
                     return;
+                    case 'restore':
+                    this.restoreTodo(TodoItem.fromJson(message.data));
+                    return;
                 case 'goto':
                     this.gotoFile(TodoItem.fromJson(message.data));
                     return;
@@ -117,6 +120,10 @@ export class TodoPanel {
 
     private updateTodo(item: TodoItem) {
         item.update();
+    }
+
+    private restoreTodo(item: TodoItem) {
+        item.restore();
     }
 
     public dispose() {
@@ -282,12 +289,14 @@ export class TodoPanel {
                 let props = match[1];
                 let text = match[2];
                 if (text) {
+                    let position = match.index;
                     let json = null;
                     if (props) {
                         json = JSON.parse(props.slice(1, props.length - 1));
                     }
                     todos.push(Object.assign({}, {
                         line: i,
+                        position,
                         fileUri: filePath.toString(),
                         text
                     }, json));

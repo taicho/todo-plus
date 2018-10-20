@@ -1,10 +1,13 @@
 import * as React from 'react';
 import { TodoItem } from '../interfaces/todoItem';
 import { TodoGroup } from '../components/todoGroup';
+import * as helpers from '../todoHelpers';
 
 
 interface State {
     todoItems?: Map<string, TodoItem[]>;
+    completedItems?: Map<string, TodoItem[]>;
+    view?: string;
 }
 
 export class Shell extends React.Component<any, State>  {
@@ -51,16 +54,64 @@ export class Shell extends React.Component<any, State>  {
     }
 
     render() {
+        const todoItems = this.state.todoItems;
+        const completedItems = this.state.completedItems;
+        const divClass = this.state.view === 'completed' ? 'shell completed' : 'shell';
         if (this.state.todoItems) {
-            return <React.Fragment>
-                {
-                    [...this.state.todoItems].sort(([keyA, valueA], [keyB, valueB]) => { return keyA.localeCompare(keyB); }).map(([key, value]) => {
-                        return <TodoGroup key={key} fileUri={key} todoItems={value} />;
-                    })
-                }
-            </React.Fragment>;
+            return <div>
+                <button onClick={this.toggleView}>Toggle View</button>
+                <div className={divClass}>
+                    <div className='pending' >
+                        {
+                            todoItems ? [...todoItems].sort(([keyA, valueA], [keyB, valueB]) => { return keyA.localeCompare(keyB); }).map(([key, value]) => {
+                                return <TodoGroup onTodoMarkClicked={(item) => { this.onTodoItemMarked(item); }} key={key} fileUri={key} todoItems={value} />;
+                            }) : null
+                        }
+                    </div>
+                    <div className='completed'>
+                        {
+                            completedItems ? [...completedItems].sort(([keyA, valueA], [keyB, valueB]) => { return keyA.localeCompare(keyB); }).map(([key, value]) => {
+                                return <TodoGroup onTodoMarkClicked={(item) => { this.onTodoItemMarked(item); }} key={key} fileUri={key} todoItems={value} />;
+                            }) : null
+                        }
+                    </div>
+                </div></div>;
         } else {
-            return <React.Fragment></React.Fragment>;
+            return <div></div>;
+        }
+    }
+
+    toggleView = () => {
+        this.setState({ view: this.state.view === 'completed' ? '' : 'completed' });
+    }
+
+    onTodoItemMarked = (todoItem: TodoItem) => {
+        if (!todoItem.isMarked) {
+            const newTodoItem = Object.assign({}, todoItem, { isMarked: true });
+            const completedItems = this.state.completedItems ? new Map<string, TodoItem[]>(this.state.completedItems) : new Map<string, TodoItem[]>();
+            const group = completedItems.get(todoItem.fileUri) || [];
+            group.push(newTodoItem);
+            completedItems.set(todoItem.fileUri, group);
+            const oldGroup = this.state.todoItems.get(todoItem.fileUri);
+            const index = oldGroup.indexOf(todoItem);
+            oldGroup.splice(index, 1);
+            if (oldGroup.length === 0) {
+                this.state.todoItems.delete(todoItem.fileUri);
+            }
+            this.setState({ completedItems, todoItems: this.state.todoItems });
+            helpers.completeTodo(todoItem);
+        } else {            
+            const oldGroup = this.state.completedItems.get(todoItem.fileUri);
+            const index = oldGroup.indexOf(todoItem);
+            oldGroup.splice(index, 1);
+            if (oldGroup.length === 0) {
+                this.state.completedItems.delete(todoItem.fileUri);
+            }
+            if(this.state.completedItems.size === 0){
+                this.toggleView();
+            }
+            this.setState({ completedItems: this.state.completedItems });
+            helpers.restoreTodo(todoItem);
         }
     }
 }

@@ -1,6 +1,5 @@
-declare const acquireVsCodeApi;
+import {vscode} from './utils';
 
-const vscode = acquireVsCodeApi();
 const contentBody = document.querySelector('#content');
 
 const createElement = (domstring) => {
@@ -43,6 +42,13 @@ export function createTodoTableItem(todoItem) {
 export function completeTodo(todoItem) {
     vscode.postMessage({
         command: 'delete',
+        data: todoItem,
+    });
+}
+
+export function restoreTodo(todoItem) {
+    vscode.postMessage({
+        command: 'restore',
         data: todoItem,
     });
 }

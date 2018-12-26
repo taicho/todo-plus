@@ -1,0 +1,212 @@
+{
+    "name": "todo-plus",
+    "displayName": "Todo Plus",
+    "description": "Create and manage TODO comments with enhanced functionality.",
+    "version": "1.0.0",
+    "publisher": "azad-ratzki",
+    "engines": {
+        "vscode": "^1.27.0"
+    },
+    "license": "MIT",
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "icon": "media/checklist.png",
+    "main": "./out/extension",
+    "galleryBanner": {
+        "color": "#1E1E1E",
+        "theme": "dark"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/taicho/todo-plus.git"
+    },
+    "contributes": {
+        "configuration": {
+            "type": "object",
+            "title": "Todo Plus",
+            "properties": {
+                "todoPlus.purgeObsoleteOnStart": {
+                    "type": "boolean",
+                    "default": true,
+                    "title": "Purge Obsolete Metadata On Startup",
+                    "description": "Purges orphaned TodoPlus metadata on startup."
+                },
+                "todoPlus.languages": {
+                    "title": "Supported Comment Languages",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "extensions": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "pattern": "\\.\\S+"
+                                },
+                                "minItems": 1
+                            },
+                            "lineComment": {
+                                "type": "string",
+                                "minLength": 1
+                            },
+                            "blockComment": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "pattern": ".+"
+                                },
+                                "minItems": 1,
+                                "maxItems": 2
+                            }
+                        },
+                        "anyOf": [
+                            {
+                                "required": [
+                                    "lineComment"
+                                ]
+                            },
+                            {
+                                "required": [
+                                    "blockComment"
+                                ]
+                            }
+                        ]
+                    },
+                    "description": "Adds custom language support."
+                }
+            }
+        },
+        "commands": [
+            {
+                "command": "todoPlusExplorer.gotoFile",
+                "title": "Open File"
+            },
+            {
+                "command": "todoPlusExplorer.gotoTodoNode",
+                "title": "Goto Todo in Explorer"
+            },
+            {
+                "command": "todoCodeLensProvider.gotoTodoNode",
+                "title": "Goto Todo in Explorer"
+            },
+            {
+                "command": "todoCodeLensProvider.convertToTodo",
+                "title": "Convert to Todo Plus"
+            },
+            {
+                "command": "todoPlusExplorer.removeTodo",
+                "title": "Remove"
+            },
+            {
+                "command": "todoPlusExplorer.markCompleted",
+                "title": "Mark Complete"
+            },
+            {
+                "command": "todoPlusExplorer.addMetadata",
+                "title": "Add Metadata"
+            },
+            {
+                "command": "todoPlusExplorer.removeMetadata",
+                "title": "Remove Metadata"
+            },
+            {
+                "command": "todoPlusExplorer.restore",
+                "title": "Restore"
+            },
+            {
+                "command": "todoPlusExplorer.toggleOption",
+                "title": "Toggle"
+            },
+            {
+                "command": "todoPlusExplorer.toggleReminder",
+                "title": "Toggle Reminder"
+            }
+        ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "todo-explorer",
+                    "title": "Todo Plus Explorer",
+                    "icon": "media/checklist.svg"
+                }
+            ]
+        },
+        "views": {
+            "todo-explorer": [
+                {
+                    "id": "todoPlusExplorer",
+                    "name": "Todos"
+                }
+            ]
+        },
+        "menus": {
+            "editor/context": [
+                {
+                    "command": "todoPlusExplorer.gotoTodoNode",
+                    "group": "navigation"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "todoPlusExplorer.removeTodo",
+                    "when": "view == todoPlusExplorer && viewItem == TodoItemExplorerNode"
+                },
+                {
+                    "command": "todoPlusExplorer.markCompleted",
+                    "when": "view == todoPlusExplorer && viewItem == TodoItemExplorerNode"
+                },
+                {
+                    "command": "todoPlusExplorer.addMetadata",
+                    "when": "view == todoPlusExplorer && viewItem == TodoItemExplorerNode"
+                },
+                {
+                    "command": "todoPlusExplorer.removeMetadata",
+                    "when": "view == todoPlusExplorer && viewItem == MetadataExplorerNode"
+                },
+                {
+                    "command": "todoPlusExplorer.restore",
+                    "when": "view == todoPlusExplorer && viewItem == TodoItemExplorerNode.completed"
+                },
+                {
+                    "command": "todoPlusExplorer.toggleOption",
+                    "when": "view == todoPlusExplorer && viewItem == OptionExplorerNode"
+                },
+                {
+                    "command": "todoPlusExplorer.toggleReminder",
+                    "when": "view == todoPlusExplorer && viewItem == ReminderOptionExplorerNode"
+                }
+            ]
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "npm run compile-extension",
+        "compile-extension": "tsc -p ./",
+        "watch-extension": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "@types/glob": "^7.1.1",
+        "@types/mocha": "^2.2.42",
+        "@types/node": "^8.10.25",
+        "@types/shortid": "0.0.29",
+        "ts-loader": "^5.2.1",
+        "tslint": "^5.8.0",
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.21"
+    },
+    "dependencies": {
+        "glob": "^7.1.3",
+        "ignore": "^5.0.2",
+        "minimatch": "^3.0.4",
+        "ms": "^2.1.1",
+        "shortid": "^2.2.13",
+        "strip-json-comments": "^2.0.1"
+    }
+}

@@ -14,7 +14,7 @@
     "activationEvents": [
         "*"
     ],
-    "icon": "media/checklist.png",
+    "icon": "media/icon.png",
     "main": "./out/extension",
     "galleryBanner": {
         "color": "#1E1E1E",

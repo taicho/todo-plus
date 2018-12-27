@@ -2,7 +2,7 @@
     "name": "todo-plus",
     "displayName": "Todo Plus",
     "description": "Create and manage TODO comments with enhanced functionality.",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "publisher": "azad-ratzki",
     "engines": {
         "vscode": "^1.27.0"

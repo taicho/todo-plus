@@ -1,4 +1,4 @@
-![Todo Plus](media/checklist.png)
+![Todo Plus](media/icon.png)
 
 # Todo Plus
 

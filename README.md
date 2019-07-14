@@ -11,8 +11,19 @@ Todo Plus is a Visual Studio Code extension that provides an easy way to view, m
 - For todos created w/ Todo Plus, created and updated dates are preserved.
 - Additional language support can be added by editing user or workspace settings for Todo Plus - see todoPlus.languages setting.
 
-## Requirements
+## Custom Language Support (todoPlus.languages setting)
+Custom language support can be added to Todo Plus by providing an array JSON objects describing how comments are formatted in the given language(s) and the file extensions associated with the language.
 
+If for instance TypeScript wasn't supported (which is) an example of the definition would look like this:
+```
+{
+  "lineComment": "//",
+  "extensions": [".ts"],
+  "blockComment": ["/*","*/"]
+}
+```
+
+## Requirements
 Person + Computer + Visual Studio Code
 
 ## Extension Settings
